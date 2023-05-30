@@ -1,0 +1,6 @@
+lib
+backup
+dist
+
+!.lintstagedrc.js
+!.prettierrc.js
