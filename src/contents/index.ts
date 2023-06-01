@@ -7,8 +7,10 @@ import {
   lightStyleId,
   dispatchEventType,
   DispatchType,
+  styleAttrTag,
+  EmitType,
 } from '@/constant'
-import { insertCrossOrigin } from './help'
+import { insertCrossOrigin, onStyleObserver } from './help'
 
 const getIsDark = () => {
   const { matches: isDark } = window.matchMedia(`(${CSSMediaName}: dark)`)
@@ -34,15 +36,15 @@ const getCssText = (cssRules: CSSRule[]) => {
   }, '')
 }
 
-let isInitStyle = false
-
-const lightRules: CSSMediaRule[] = []
-const darkRules: CSSMediaRule[] = []
+let lightRules: CSSMediaRule[] = []
+let darkRules: CSSMediaRule[] = []
 
 const onInitStyle = async () => {
   // 避免 CORS 问题
   await insertCrossOrigin()
 
+  lightRules = []
+  darkRules = []
   Array.from(document.styleSheets).forEach(styleSheet => {
     try {
       const { disabled } = styleSheet
@@ -65,11 +67,14 @@ const onInitStyle = async () => {
         })
 
         if (filterCssRules.length !== cssRules.length) {
-          const style = document.createElement('style')
-          const text = getCssText(filterCssRules)
-          style.innerText = text
-
-          ownerNode?.parentNode?.insertBefore(style, ownerNode)
+          // 存在规则再创建
+          if (filterCssRules.length) {
+            const style = document.createElement('style')
+            style.setAttribute(styleAttrTag, 'true')
+            style.innerText = getCssText(filterCssRules)
+            ownerNode?.parentNode?.insertBefore(style, ownerNode)
+          }
+          // 只要发生变化了都删除节点
           ownerNode?.parentNode?.removeChild(ownerNode)
         }
       }
@@ -101,6 +106,7 @@ const applyStyleRules = (themValue: ThemeValue, isReverse = false) => {
       document.head.appendChild(themeStyle)
     }
     themeStyle.setAttribute('id', id)
+    themeStyle.setAttribute(styleAttrTag, 'true')
     themeStyle.innerText = cssText
   }
   const removeThemeStyle = document.getElementById(
@@ -111,6 +117,9 @@ const applyStyleRules = (themValue: ThemeValue, isReverse = false) => {
   }
 }
 
+let isInitStyle = false
+let isObserver = false
+
 const onSwitch = async () => {
   const curThemeValue = getThemeValue()
   const isDark = getIsDark()
@@ -119,6 +128,27 @@ const onSwitch = async () => {
   // 初始化 style 标签，只执行一次
   if (!isInitStyle) {
     await onInitStyle()
+
+    if (!isObserver) {
+      onStyleObserver(
+        () => {
+          console.log(111111)
+          isInitStyle = false
+          onSwitch()
+        },
+        node => {
+          if (node instanceof HTMLElement) {
+            const tag = node.getAttribute(styleAttrTag)
+            // 标记过的修改除外
+            if (tag) {
+              return EmitType.False
+            }
+          }
+          return EmitType.None
+        },
+      )
+      isObserver = true
+    }
   }
   isInitStyle = true
 
@@ -138,6 +168,7 @@ const onSwitch = async () => {
   }
 }
 
+// 初始化检查执行
 const onInit = () => {
   const isDark = getIsDark()
   const isLocalDark = getIsLocalDark()
@@ -148,20 +179,21 @@ const onInit = () => {
     onSwitch()
   }
 }
+onInit()
 
 // 检查是否提前注入 web 内容脚本
-chrome.runtime.sendMessage(
-  {
-    type: MessageType.RegisterContentScripts,
-  },
-  res => {
-    // const { payload } = res
-    // // 注入后再执行初始化逻辑
-    // if (payload) {
-    onInit()
-    // }
-  },
-)
+// chrome.runtime.sendMessage(
+//   {
+//     type: MessageType.RegisterContentScripts,
+//   },
+//   res => {
+//     // const { payload } = res
+//     // // 注入后再执行初始化逻辑
+//     // if (payload) {
+//     onInit()
+//     // }
+//   },
+// )
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   const { payload } = request

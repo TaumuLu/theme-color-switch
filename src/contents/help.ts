@@ -1,5 +1,8 @@
+import { EmitType } from '../constant'
+
 export const onStyleObserver = (
   onWatch: (mutations: MutationRecord[]) => void,
+  isEmit?: (node: Node, isAdd: boolean) => EmitType,
 ) => {
   if (typeof MutationObserver !== 'undefined') {
     const observer = new MutationObserver(mutations => {
@@ -7,6 +10,15 @@ export const onStyleObserver = (
       const linkNodes: HTMLLinkElement[] = []
       const onNodeEmit = (node: Node, isAdd: boolean) => {
         const name = node.nodeName.toLowerCase()
+        if (isEmit) {
+          const value = isEmit(node, isAdd)
+          switch (value) {
+            case EmitType.True:
+              return true
+            case EmitType.False:
+              return false
+          }
+        }
         if (name === 'style') {
           return true
         } else if (name === 'link') {
@@ -48,7 +60,7 @@ export const onStyleObserver = (
         }
       }
     })
-    observer.observe(document, { childList: true, subtree: true })
+    observer.observe(document.head, { childList: true, subtree: false })
   }
 }
 

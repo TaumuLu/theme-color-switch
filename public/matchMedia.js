@@ -1,7 +1,8 @@
 ;(function () {
+  const appName = 'theme-color-switch'
   const CSSMediaName = 'prefers-color-scheme'
-  const localThemeKey = 'theme-color-switch__local-storage'
-  const listenerType = 'theme-color-switch__content-dispatch'
+  const localThemeKey = `${appName}__local-storage`
+  const listenerType = `${appName}__content-dispatch`
   const dispatchType = {
     SaveSchemeValue: 'saveSchemeValue',
   }

@@ -1,9 +1,13 @@
+export const appName = 'theme-color-switch'
+
 export enum ThemeValue {
   Dark = 'dark',
   Light = 'light',
 }
 
-export const localThemeKey = 'theme-color-switch__local-storage'
+export const localThemeKey = `${appName}__local-storage`
+
+export const styleAttrTag = `${appName}__style-tag`
 
 export const CSSMediaName = 'prefers-color-scheme'
 
@@ -23,10 +27,10 @@ export interface ResponseMessage<P = any> {
   payload?: P
 }
 
-export const darkStyleId = 'theme-color-switch__dark-id'
-export const lightStyleId = 'theme-color-switch__light-id'
+export const darkStyleId = `${appName}__dark-id`
+export const lightStyleId = `${appName}__light-id`
 
-export const dispatchEventType = 'theme-color-switch__content-dispatch'
+export const dispatchEventType = `${appName}__content-dispatch`
 
 export enum DispatchType {
   SaveSchemeValue = 'saveSchemeValue',
@@ -35,4 +39,10 @@ export enum DispatchType {
 export enum StorageKey {
   GlobalThemeKey = 'theme-color',
   EnhancedMode = 'enhanced-mode',
+}
+
+export enum EmitType {
+  True,
+  False,
+  None,
 }
