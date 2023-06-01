@@ -38,5 +38,9 @@ module.exports = {
     },
   },
   plugins: ['vue'],
-  rules: {},
+  rules: {
+    '@typescript-eslint/no-floating-promises': 0,
+    '@typescript-eslint/explicit-function-return-type': 0,
+    '@typescript-eslint/strict-boolean-expressions': 0,
+  },
 }

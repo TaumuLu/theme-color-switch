@@ -3,9 +3,44 @@
   "name": "Theme Color Switch",
   "version": "1.0.0",
   "action": {
-    "default_popup": "index.html"
+    "default_popup": "index.html",
+    "default_icon": "logo.png"
+  },
+  "icons": {
+    "16": "logo.png",
+    "32": "logo.png",
+    "48": "logo.png",
+    "128": "logo.png"
   },
   "background": {
     "service_worker": "src/background/index.ts"
-  }
+  },
+  "content_scripts": [
+    {
+      "js": ["src/contents/index.ts"],
+      "matches": ["<all_urls>"],
+      "run_at": "document_end"
+    }
+  ],
+  "permissions": ["activeTab", "tabs", "storage", "cookies", "scripting"],
+  "host_permissions": ["http://*/*", "https://*/*"],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; style-src 'self' 'unsafe-inline'; media-src *"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "*.html",
+        "icons/*",
+        "images/*",
+        "fonts/*",
+        "assets/*",
+        "html/*",
+        "js/*",
+        "lib/*",
+        "css/*"
+      ],
+      "matches": ["<all_urls>"]
+    }
+  ]
 }
