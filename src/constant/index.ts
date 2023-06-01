@@ -3,11 +3,9 @@ export enum ThemeValue {
   Light = 'light',
 }
 
-export const globalThemeKey = 'theme-color-global'
+export const localThemeKey = 'theme-color-switch__local-storage'
 
-export const localThemeKey = 'theme-color-switch__local'
-
-export const CSSMediaKey = 'prefers-color-scheme'
+export const CSSMediaName = 'prefers-color-scheme'
 
 export enum MessageType {
   RegisterContentScripts = 'registerContentScripts',
@@ -23,4 +21,18 @@ export interface SendMessage<P = any> {
 
 export interface ResponseMessage<P = any> {
   payload?: P
+}
+
+export const darkStyleId = 'theme-color-switch__dark-id'
+export const lightStyleId = 'theme-color-switch__light-id'
+
+export const dispatchEventType = 'theme-color-switch__content-dispatch'
+
+export enum DispatchType {
+  SaveSchemeValue = 'saveSchemeValue',
+}
+
+export enum StorageKey {
+  GlobalThemeKey = 'theme-color',
+  EnhancedMode = 'enhanced-mode',
 }

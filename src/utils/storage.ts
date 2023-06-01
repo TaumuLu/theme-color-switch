@@ -1,4 +1,5 @@
 import { type Dict } from '@/types'
+import { ThemeValue, StorageKey } from '../constant'
 
 export const setStorage = async (items: Dict) => {
   await new Promise<void>(resolve => {
@@ -14,6 +15,19 @@ export const getStorage = async <T = Dict>(
   return await new Promise<T>(resolve => {
     chrome.storage.local.get(key, result => {
       resolve(result as any)
+    })
+  })
+}
+
+const defaultStorageValue = {
+  [StorageKey.GlobalThemeKey]: ThemeValue.Dark,
+  [StorageKey.EnhancedMode]: false,
+}
+
+export const getStorageValue = async <T = Dict>(key: StorageKey) => {
+  return await new Promise<T>(resolve => {
+    chrome.storage.local.get({ [key]: defaultStorageValue[key] }, result => {
+      resolve(result[key])
     })
   })
 }

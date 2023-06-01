@@ -1,6 +1,10 @@
 ;(function () {
-  const CSSMediaKey = 'prefers-color-scheme'
-  const localThemeKey = 'theme-color-switch__local'
+  const CSSMediaName = 'prefers-color-scheme'
+  const localThemeKey = 'theme-color-switch__local-storage'
+  const listenerType = 'theme-color-switch__content-dispatch'
+  const dispatchType = {
+    SaveSchemeValue: 'saveSchemeValue',
+  }
 
   const matchMedia = window.matchMedia
 
@@ -11,7 +15,7 @@
 
   const getThemeValue = () => {
     const localThemeValue = localStorage.getItem(localThemeKey)
-    const { matches: isDark } = matchMedia(`(${CSSMediaKey}: dark)`)
+    const { matches: isDark } = matchMedia(`(${CSSMediaName}: dark)`)
 
     const curThemeValue =
       localThemeValue || (isDark ? themeMap.dark : themeMap.light)
@@ -44,7 +48,7 @@
   window.matchMedia = (mediaText, ...other) => {
     const result = matchMedia(mediaText, ...other)
 
-    if (mediaText.includes(CSSMediaKey)) {
+    if (mediaText.includes(CSSMediaName)) {
       const listener = getAddListener(result)
       mediaList.push(listener)
 
@@ -80,32 +84,29 @@
     return result
   }
 
-  document.addEventListener(
-    'theme-color-switch__content-message',
-    function (e) {
-      const { type, payload } = e.detail || {}
-      switch (type) {
-        case 'setItem':
-          localStorage.setItem(localThemeKey, payload)
+  document.addEventListener(listenerType, function (e) {
+    const { type, payload } = e.detail || {}
+    switch (type) {
+      case dispatchType.SaveSchemeValue:
+        localStorage.setItem(localThemeKey, payload)
 
-          // 主动执行监听函数
-          mediaList.forEach(item => {
-            const { media } = item.mediaQueryList
-            const { matches } = item.proxyMediaQueryList
+        // 主动执行监听函数
+        mediaList.forEach(item => {
+          const { media } = item.mediaQueryList
+          const { matches } = item.proxyMediaQueryList
 
-            try {
-              item.watch({
-                matches,
-                media,
-              })
-            } catch (error) {
-              console.error('theme-color-switch: Trigger listening failed')
-            }
-          })
-          break
-      }
-    },
-  )
+          try {
+            item.watch({
+              matches,
+              media,
+            })
+          } catch (error) {
+            console.error('theme-color-switch: Trigger listening failed')
+          }
+        })
+        break
+    }
+  })
 
   // document.dispatchEvent(
   //   new CustomEvent('matchMedia-script', {
