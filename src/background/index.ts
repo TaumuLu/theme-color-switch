@@ -1,4 +1,5 @@
-import { MessageType } from '../constant'
+import { MessageType, StorageKey } from '../constant'
+import { getStorageValue } from '../utils/storage'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // import preload from '../contents/preload?script'
 
@@ -6,23 +7,14 @@ import { MessageType } from '../constant'
 // })
 
 const matchMediaId = 'content-MAIN-matchMedia'
-const preLoadId = 'content-ISOLATED-preload'
 
 const registerMatchMedia = async () => {
   return await chrome.scripting
     .getRegisteredContentScripts({
-      ids: [preLoadId, matchMediaId],
+      ids: [matchMediaId],
     })
     .then(async res => {
       if (res.length === 0) {
-        // await chrome.scripting.registerContentScripts([
-        //   {
-        //     id: preLoadId,
-        //     js: [preload],
-        //     matches: ['<all_urls>'],
-        //     runAt: 'document_start',
-        //   },
-        // ])
         await chrome.scripting.registerContentScripts([
           {
             id: matchMediaId,
@@ -40,13 +32,32 @@ const registerMatchMedia = async () => {
     })
 }
 
+const unRegisterMatchMedia = async () => {
+  return await chrome.scripting
+    .getRegisteredContentScripts({
+      ids: [matchMediaId],
+    })
+    .then(async res => {
+      if (res.length !== 0) {
+        await chrome.scripting.unregisterContentScripts({
+          ids: [matchMediaId],
+        })
+      }
+      return true
+    })
+    .catch(() => {
+      return false
+    })
+}
+
 chrome.runtime.onInstalled.addListener(() => {
-  // getStorageValue(StorageKey.EnhancedMode).then(value => {
-  //   if (value) {
-  //     // 增强模式再启用脚本
-  //   }
-  // })
-  registerMatchMedia()
+  getStorageValue(StorageKey.Enable).then(value => {
+    if (value) {
+      registerMatchMedia()
+    } else {
+      unRegisterMatchMedia()
+    }
+  })
 })
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -57,6 +68,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   switch (request.type) {
     case MessageType.RegisterContentScripts:
       registerMatchMedia().then(res => {
+        sendResponse({ payload: res })
+      })
+      return true
+    case MessageType.UnRegisterContentScripts:
+      unRegisterMatchMedia().then(res => {
         sendResponse({ payload: res })
       })
       return true

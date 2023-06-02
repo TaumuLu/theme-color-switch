@@ -156,8 +156,8 @@ const onSwitch = async () => {
 
     if (enhancedMode && !isObserver) {
       onStyleObserver(
-        aaa => {
-          console.info('onInitStyle')
+        () => {
+          // console.info('onInitStyle')
           isInitStyle = false
           onSwitch()
         },
@@ -192,20 +192,6 @@ const onSwitch = async () => {
     }
   }
 }
-
-// 检查是否提前注入 web 内容脚本
-// chrome.runtime.sendMessage(
-//   {
-//     type: MessageType.RegisterContentScripts,
-//   },
-//   res => {
-//     // const { payload } = res
-//     // // 注入后再执行初始化逻辑
-//     // if (payload) {
-//     onInit()
-//     // }
-//   },
-// )
 
 // 初始化检查执行
 const onInit = () => {

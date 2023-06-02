@@ -63,13 +63,10 @@
           const curThemeValue = getThemeValue()
           switch (property) {
             case 'matches':
-              //  未启用情况下不使用自己的值
-              if (storageValue.enable) {
-                if (curThemeValue) {
-                  return mediaText.includes('dark')
-                    ? curThemeValue === 'dark'
-                    : curThemeValue === 'light'
-                }
+              if (curThemeValue) {
+                return mediaText.includes('dark')
+                  ? curThemeValue === 'dark'
+                  : curThemeValue === 'light'
               }
               break
             case 'addListener':

@@ -15,6 +15,7 @@ export const CSSMediaName = 'prefers-color-scheme'
 
 export enum MessageType {
   RegisterContentScripts = 'registerContentScripts',
+  UnRegisterContentScripts = 'unRegisterContentScripts',
   GetContentThemeValue = 'getContentThemeValue',
   SetContentThemeValue = 'setContentThemeValue',
   GetContentHost = 'getContentHost',

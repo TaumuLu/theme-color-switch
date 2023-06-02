@@ -64,7 +64,16 @@ const onEnable = (value: any) => {
     getCurrentTabId().then(tabId => {
       if (tabId) {
         // eslint-disable-next-line no-undef
-        chrome.tabs.reload(tabId)
+        chrome.runtime
+          .sendMessage({
+            type: value
+              ? MessageType.RegisterContentScripts
+              : MessageType.UnRegisterContentScripts,
+          })
+          .then(() => {
+            // eslint-disable-next-line no-undef
+            chrome.tabs.reload(tabId)
+          })
       }
     })
   })
