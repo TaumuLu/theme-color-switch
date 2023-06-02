@@ -19,3 +19,9 @@ You can learn more about Take Over mode [here](https://github.com/johnsoncodehk/
 
 - https://sspai.com/
 - https://developer.mozilla.org/docs/Web
+- https://learn.microsoft.com/zh-cn/microsoft-edge/extensions-chromium/publish/publish-extension
+
+## 相关网站
+
+- https://developer.chrome.com/docs/extensions/mv3/
+- https://chrome.google.com/webstore/devconsole
