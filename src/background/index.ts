@@ -1,22 +1,21 @@
-import { MessageType } from '../constant'
+import { MessageType, StorageKey } from '../constant'
+import { getStorageValue } from '../utils/storage'
 
 // chrome.action.onClicked.addListener(tab => {
-// chrome.scripting.executeScript({
-//   target: { tabId: tab.id },
-//   files: [scriptPath],
 // })
-// })
+
+const matchMediaId = 'content-main-matchMedia'
 
 const registerMatchMedia = async () => {
   return await chrome.scripting
     .getRegisteredContentScripts({
-      ids: ['matchMedia'],
+      ids: [matchMediaId],
     })
     .then(async res => {
       if (res.length === 0) {
         await chrome.scripting.registerContentScripts([
           {
-            id: 'matchMedia',
+            id: matchMediaId,
             js: ['matchMedia.js'],
             matches: ['<all_urls>'],
             runAt: 'document_start',
@@ -32,7 +31,12 @@ const registerMatchMedia = async () => {
 }
 
 chrome.runtime.onInstalled.addListener(() => {
-  registerMatchMedia()
+  getStorageValue(StorageKey.EnhancedMode).then(value => {
+    if (value) {
+      // 增强模式再启用脚本
+      registerMatchMedia()
+    }
+  })
 })
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {

@@ -87,6 +87,8 @@ export const insertCrossOrigin = async () => {
             newLink.onerror = error => {
               reject(error)
             }
+          }).catch((e: any) => {
+            console.error(`link add crossorigin error:`, e)
           })
         }
         return Promise.resolve()

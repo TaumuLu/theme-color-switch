@@ -9,8 +9,11 @@ import {
   DispatchType,
   styleAttrTag,
   EmitType,
+  styleAttrReverse,
+  StorageKey,
 } from '@/constant'
 import { insertCrossOrigin, onStyleObserver } from './help'
+import { getStorageValue } from '../utils/storage'
 
 const getIsDark = () => {
   const { matches: isDark } = window.matchMedia(`(${CSSMediaName}: dark)`)
@@ -39,26 +42,54 @@ const getCssText = (cssRules: CSSRule[]) => {
 let lightRules: CSSMediaRule[] = []
 let darkRules: CSSMediaRule[] = []
 
+console.log('load theme color switch')
+
 const onInitStyle = async () => {
   // 避免 CORS 问题
   await insertCrossOrigin()
 
-  lightRules = []
-  darkRules = []
+  const newLightRules: CSSMediaRule[] = []
+  const newDarkRules: CSSMediaRule[] = []
   Array.from(document.styleSheets).forEach(styleSheet => {
     try {
       const { disabled } = styleSheet
       if (!disabled) {
         const { cssRules, ownerNode } = styleSheet
+        let isReverse = false
+
+        if (ownerNode instanceof HTMLStyleElement) {
+          const id = ownerNode.getAttribute('id')
+          isReverse = !!ownerNode.getAttribute(styleAttrReverse)
+
+          // 清空重复的样式
+          if (id === darkStyleId) {
+            darkRules = []
+          } else if (id === lightStyleId) {
+            console.log(888888, styleSheet)
+            console.log(1111, newLightRules)
+            lightRules = []
+          }
+        }
 
         const filterCssRules = Array.from(cssRules).filter(rule => {
           if (rule instanceof CSSMediaRule) {
             const { conditionText } = rule
             if (conditionText.includes(CSSMediaName)) {
               if (conditionText.includes(ThemeValue.Dark)) {
-                darkRules.push(rule)
+                // 处理翻转后的样式
+                if (isReverse) {
+                  rule.cssText = replaceCssText(rule.cssText, ThemeValue.Dark)
+                  newLightRules.push(rule)
+                } else {
+                  newDarkRules.push(rule)
+                }
               } else {
-                lightRules.push(rule)
+                if (isReverse) {
+                  rule.cssText = replaceCssText(rule.cssText, ThemeValue.Light)
+                  newDarkRules.push(rule)
+                } else {
+                  newLightRules.push(rule)
+                }
               }
               return false
             }
@@ -82,6 +113,25 @@ const onInitStyle = async () => {
       // console.error(e)
     }
   })
+
+  darkRules = darkRules.concat(newDarkRules)
+  lightRules = lightRules.concat(newLightRules)
+
+  console.log(
+    22222,
+    document.styleSheets.length,
+    lightRules.length,
+    darkRules.length,
+  )
+}
+
+const replaceCssText = (cssText: string, themValue: ThemeValue) => {
+  return cssText.replace(/\((.*prefers-color-scheme.*)\)/g, match => {
+    return match.replace(
+      themValue,
+      themValue === ThemeValue.Dark ? ThemeValue.Light : ThemeValue.Dark,
+    )
+  })
 }
 
 const applyStyleRules = (themValue: ThemeValue, isReverse = false) => {
@@ -93,12 +143,7 @@ const applyStyleRules = (themValue: ThemeValue, isReverse = false) => {
 
   let cssText = getCssText(rules)
   if (isReverse) {
-    cssText = cssText.replace(/\((.*prefers-color-scheme.*)\)/g, match => {
-      return match.replace(
-        themValue,
-        isDark ? ThemeValue.Light : ThemeValue.Dark,
-      )
-    })
+    cssText = replaceCssText(cssText, themValue)
   }
   if (cssText) {
     if (!themeStyle) {
@@ -107,6 +152,9 @@ const applyStyleRules = (themValue: ThemeValue, isReverse = false) => {
     }
     themeStyle.setAttribute('id', id)
     themeStyle.setAttribute(styleAttrTag, 'true')
+    if (isReverse) {
+      themeStyle.setAttribute(styleAttrReverse, 'true')
+    }
     themeStyle.innerText = cssText
   }
   const removeThemeStyle = document.getElementById(
@@ -128,11 +176,12 @@ const onSwitch = async () => {
   // 初始化 style 标签，只执行一次
   if (!isInitStyle) {
     await onInitStyle()
+    const enhancedMode = await getStorageValue(StorageKey.EnhancedMode)
 
-    if (!isObserver) {
+    if (enhancedMode && !isObserver) {
       onStyleObserver(
-        () => {
-          console.log(111111)
+        aaa => {
+          console.info('onInitStyle')
           isInitStyle = false
           onSwitch()
         },
@@ -168,19 +217,6 @@ const onSwitch = async () => {
   }
 }
 
-// 初始化检查执行
-const onInit = () => {
-  const isDark = getIsDark()
-  const isLocalDark = getIsLocalDark()
-  const isSame = isDark ? isLocalDark : !isLocalDark
-
-  // 仅第一次判断下是否需要切换
-  if (!isSame) {
-    onSwitch()
-  }
-}
-onInit()
-
 // 检查是否提前注入 web 内容脚本
 // chrome.runtime.sendMessage(
 //   {
@@ -195,10 +231,38 @@ onInit()
 //   },
 // )
 
+const onContentLoad = () => {
+  chrome.runtime.sendMessage({
+    type: MessageType.ContentLoad,
+    payload: {
+      themeValue: getThemeValue(),
+      host: window.location.host,
+    },
+  })
+}
+
+// 初始化检查执行
+const onInit = () => {
+  const isDark = getIsDark()
+  const isLocalDark = getIsLocalDark()
+  const isSame = isDark ? isLocalDark : !isLocalDark
+
+  // 仅第一次判断下是否需要切换
+  if (!isSame) {
+    onSwitch()
+  }
+
+  onContentLoad()
+}
+onInit()
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   const { payload } = request
 
   switch (request.type) {
+    case MessageType.EmitContentLoad:
+      onContentLoad()
+      break
     case MessageType.GetContentThemeValue:
       sendResponse({
         payload: getThemeValue(),

@@ -1,15 +1,29 @@
 import { type ResponseMessage, type SendMessage } from '../constant'
 
+export const getCurrentTabs = async (queryInfo?: chrome.tabs.QueryInfo) => {
+  return await chrome.tabs.query({
+    active: true,
+    currentWindow: true,
+    ...queryInfo,
+  })
+}
+
+export const getCurrentTab = async (queryInfo?: chrome.tabs.QueryInfo) => {
+  return await getCurrentTabs(queryInfo).then(([tab]) => tab)
+}
+
+export const getCurrentTabId = async (queryInfo?: chrome.tabs.QueryInfo) => {
+  return await getCurrentTab(queryInfo).then(tab => tab.id)
+}
+
 export const sendMessage = <R = any>(
   message: SendMessage,
   responseCallback: (response: ResponseMessage<R>) => void = () => {},
 ) => {
-  chrome.tabs.query({ active: true, currentWindow: true }).then(tabs => {
-    const id = tabs.at(0)?.id
-
-    if (id) {
+  getCurrentTabId().then(tabId => {
+    if (tabId) {
       // eslint-disable-next-line no-undef
-      chrome.tabs.sendMessage(id, message, responseCallback)
+      chrome.tabs.sendMessage(tabId, message, responseCallback)
     }
   })
 }

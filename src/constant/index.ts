@@ -9,6 +9,8 @@ export const localThemeKey = `${appName}__local-storage`
 
 export const styleAttrTag = `${appName}__style-tag`
 
+export const styleAttrReverse = `${appName}__style-reverse`
+
 export const CSSMediaName = 'prefers-color-scheme'
 
 export enum MessageType {
@@ -16,6 +18,8 @@ export enum MessageType {
   GetContentThemeValue = 'getContentThemeValue',
   SetContentThemeValue = 'setContentThemeValue',
   GetContentHost = 'getContentHost',
+  ContentLoad = 'contentLoad',
+  EmitContentLoad = 'emitContentLoad',
 }
 
 export interface SendMessage<P = any> {

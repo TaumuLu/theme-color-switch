@@ -17,6 +17,7 @@
           style="--el-switch-on-color: #1b1b1b; --el-switch-off-color: #f7f7f7"
           active-text="深色模式"
           inactive-text="浅色模式"
+          :disabled="!isLoad"
           @change="onChange"
         />
       </div>
@@ -27,10 +28,11 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { MessageType, ThemeValue } from '../constant'
-import { sendMessage } from '../utils/tabMessage'
+import { getCurrentTabId, sendMessage } from '../utils/tabMessage'
 
 const isDark = ref(true)
 const host = ref('')
+const isLoad = ref(false)
 
 // 同步到 content 修改主题色
 const onChange = (value: any) => {
@@ -40,17 +42,24 @@ const onChange = (value: any) => {
   })
 }
 
-// 获取主题色
-sendMessage({ type: MessageType.GetContentThemeValue }, res => {
-  if (res) {
-    isDark.value = res.payload === ThemeValue.Dark
-  }
-})
+// 触发 ContentLoad 事件
+sendMessage({ type: MessageType.EmitContentLoad })
 
-// 获取当前 host
-sendMessage({ type: MessageType.GetContentHost }, res => {
-  if (res) {
-    host.value = res.payload
+// eslint-disable-next-line no-undef
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  const senderId = sender.tab?.id
+  const { payload, type } = request
+
+  switch (type) {
+    case MessageType.ContentLoad:
+      getCurrentTabId().then(tabId => {
+        // 只接收当前激活 tab 的事件
+        if (tabId !== senderId) return
+
+        isLoad.value = true
+        isDark.value = payload.themeValue === ThemeValue.Dark
+        host.value = payload.host
+      })
   }
 })
 </script>
