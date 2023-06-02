@@ -15,6 +15,13 @@ const name = packageJson.name
   .map(str => str.charAt(0).toUpperCase() + str.slice(1))
   .join(' ')
 
+const icons = {
+  16: 'icons/16.png',
+  32: 'icons/32.png',
+  48: 'icons/48.png',
+  128: 'icons/128.png',
+}
+
 export default defineManifest(async env => {
   return {
     ...manifestJson,
@@ -23,5 +30,10 @@ export default defineManifest(async env => {
     version: `${major}.${minor}.${patch}.${label}`,
     // semver is OK in "version_name"
     version_name: version,
+    icons,
+    action: {
+      ...manifestJson.action,
+      default_icon: icons,
+    },
   }
 })
