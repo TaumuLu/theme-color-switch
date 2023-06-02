@@ -1,4 +1,37 @@
-import { EmitType } from '../constant'
+import { CSSMediaName, EmitType, ThemeValue, localThemeKey } from '../constant'
+
+export const getIsDark = () => {
+  const { matches: isDark } = window.matchMedia(`(${CSSMediaName}: dark)`)
+  return isDark
+}
+
+export const getIsLocalDark = () => {
+  return getThemeValue() === ThemeValue.Dark
+}
+
+export const getThemeValue = () => {
+  const localThemeValue = window.localStorage.getItem(localThemeKey)
+  const isDark = getIsDark()
+  const curThemeValue =
+    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing, @typescript-eslint/strict-boolean-expressions
+    localThemeValue || (isDark ? ThemeValue.Dark : ThemeValue.Light)
+  return curThemeValue
+}
+
+export const getCssText = (cssRules: CSSRule[]) => {
+  return Array.from(cssRules).reduce((p, c) => {
+    return p + c.cssText
+  }, '')
+}
+
+export const replaceCssText = (cssText: string, themValue: ThemeValue) => {
+  return cssText.replace(/\((.*prefers-color-scheme.*)\)/g, match => {
+    return match.replace(
+      themValue,
+      themValue === ThemeValue.Dark ? ThemeValue.Light : ThemeValue.Dark,
+    )
+  })
+}
 
 export const onStyleObserver = (
   onWatch: (mutations: MutationRecord[]) => void,

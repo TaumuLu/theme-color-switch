@@ -12,37 +12,19 @@ import {
   styleAttrReverse,
   StorageKey,
 } from '@/constant'
-import { insertCrossOrigin, onStyleObserver } from './help'
+import {
+  getCssText,
+  getIsDark,
+  getIsLocalDark,
+  getThemeValue,
+  insertCrossOrigin,
+  onStyleObserver,
+  replaceCssText,
+} from './help'
 import { getStorageValue } from '../utils/storage'
-
-const getIsDark = () => {
-  const { matches: isDark } = window.matchMedia(`(${CSSMediaName}: dark)`)
-  return isDark
-}
-
-const getIsLocalDark = () => {
-  return getThemeValue() === ThemeValue.Dark
-}
-
-const getThemeValue = () => {
-  const localThemeValue = window.localStorage.getItem(localThemeKey)
-  const isDark = getIsDark()
-  const curThemeValue =
-    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing, @typescript-eslint/strict-boolean-expressions
-    localThemeValue || (isDark ? ThemeValue.Dark : ThemeValue.Light)
-  return curThemeValue
-}
-
-const getCssText = (cssRules: CSSRule[]) => {
-  return Array.from(cssRules).reduce((p, c) => {
-    return p + c.cssText
-  }, '')
-}
 
 let lightRules: CSSMediaRule[] = []
 let darkRules: CSSMediaRule[] = []
-
-console.log('load theme color switch')
 
 const onInitStyle = async () => {
   // 避免 CORS 问题
@@ -59,14 +41,12 @@ const onInitStyle = async () => {
 
         if (ownerNode instanceof HTMLStyleElement) {
           const id = ownerNode.getAttribute('id')
-          isReverse = !!ownerNode.getAttribute(styleAttrReverse)
+          isReverse = ownerNode.getAttribute(styleAttrReverse) === 'true'
 
           // 清空重复的样式
           if (id === darkStyleId) {
             darkRules = []
           } else if (id === lightStyleId) {
-            console.log(888888, styleSheet)
-            console.log(1111, newLightRules)
             lightRules = []
           }
         }
@@ -117,21 +97,12 @@ const onInitStyle = async () => {
   darkRules = darkRules.concat(newDarkRules)
   lightRules = lightRules.concat(newLightRules)
 
-  console.log(
-    22222,
-    document.styleSheets.length,
-    lightRules.length,
-    darkRules.length,
-  )
-}
-
-const replaceCssText = (cssText: string, themValue: ThemeValue) => {
-  return cssText.replace(/\((.*prefers-color-scheme.*)\)/g, match => {
-    return match.replace(
-      themValue,
-      themValue === ThemeValue.Dark ? ThemeValue.Light : ThemeValue.Dark,
-    )
-  })
+  // console.log(
+  //   22222,
+  //   document.styleSheets.length,
+  //   lightRules.length,
+  //   darkRules.length,
+  // )
 }
 
 const applyStyleRules = (themValue: ThemeValue, isReverse = false) => {
@@ -153,6 +124,7 @@ const applyStyleRules = (themValue: ThemeValue, isReverse = false) => {
     themeStyle.setAttribute('id', id)
     themeStyle.setAttribute(styleAttrTag, 'true')
     if (isReverse) {
+      // 设置样式反转标识
       themeStyle.setAttribute(styleAttrReverse, 'true')
     }
     themeStyle.innerText = cssText
@@ -169,6 +141,10 @@ let isInitStyle = false
 let isObserver = false
 
 const onSwitch = async () => {
+  // 是否启用
+  const isEnable = await getStorageValue(StorageKey.Enable)
+  if (!isEnable) return
+
   const curThemeValue = getThemeValue()
   const isDark = getIsDark()
   const isLocalDark = curThemeValue === ThemeValue.Dark
@@ -231,16 +207,6 @@ const onSwitch = async () => {
 //   },
 // )
 
-const onContentLoad = () => {
-  chrome.runtime.sendMessage({
-    type: MessageType.ContentLoad,
-    payload: {
-      themeValue: getThemeValue(),
-      host: window.location.host,
-    },
-  })
-}
-
 // 初始化检查执行
 const onInit = () => {
   const isDark = getIsDark()
@@ -251,28 +217,14 @@ const onInit = () => {
   if (!isSame) {
     onSwitch()
   }
-
-  onContentLoad()
 }
+
 onInit()
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   const { payload } = request
 
   switch (request.type) {
-    case MessageType.EmitContentLoad:
-      onContentLoad()
-      break
-    case MessageType.GetContentThemeValue:
-      sendResponse({
-        payload: getThemeValue(),
-      })
-      break
-    case MessageType.GetContentHost:
-      sendResponse({
-        payload: window.location.host,
-      })
-      break
     case MessageType.SetContentThemeValue:
       // 通知内容脚本修改 localStorage，同时触发 js 端监听函数
       document.dispatchEvent(
@@ -291,7 +243,3 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       break
   }
 })
-
-// document.addEventListener('matchMedia-script', function (e) {
-//   console.log(e.detail)
-// })

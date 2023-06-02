@@ -4,7 +4,12 @@
   const localThemeKey = `${appName}__local-storage`
   const listenerType = `${appName}__content-dispatch`
   const dispatchType = {
+    Preload: 'preload',
     SaveSchemeValue: 'saveSchemeValue',
+    UpdateStorage: 'updateStorage',
+  }
+  let storageValue = {
+    enable: false,
   }
 
   const matchMedia = window.matchMedia
@@ -44,24 +49,27 @@
     }
   }
 
-  const mediaList = []
+  const listeners = []
 
   window.matchMedia = (mediaText, ...other) => {
     const result = matchMedia(mediaText, ...other)
 
     if (mediaText.includes(CSSMediaName)) {
       const listener = getAddListener(result)
-      mediaList.push(listener)
+      listeners.push(listener)
 
       const proxyMediaQueryList = new Proxy(result, {
         get: function (target, property, receiver) {
           const curThemeValue = getThemeValue()
           switch (property) {
             case 'matches':
-              if (curThemeValue) {
-                return mediaText.includes('dark')
-                  ? curThemeValue === 'dark'
-                  : curThemeValue === 'light'
+              //  未启用情况下不使用自己的值
+              if (storageValue.enable) {
+                if (curThemeValue) {
+                  return mediaText.includes('dark')
+                    ? curThemeValue === 'dark'
+                    : curThemeValue === 'light'
+                }
               }
               break
             case 'addListener':
@@ -70,7 +78,8 @@
               return listener.removeListener
           }
 
-          const value = Reflect.get(target, property, receiver)
+          const value = target[property]
+          // const value = Reflect.get(target, property, receiver)
           if (typeof value === 'function') {
             return value.bind(target)
           }
@@ -85,33 +94,44 @@
     return result
   }
 
+  const emitListeners = () => {
+    if (!storageValue.enable) return
+
+    // 主动执行监听函数
+    listeners.forEach(item => {
+      const { media } = item.mediaQueryList
+      const { matches } = item.proxyMediaQueryList
+
+      try {
+        item.watch({
+          matches,
+          media,
+        })
+      } catch (error) {
+        console.error('theme-color-switch: Trigger listening failed')
+      }
+    })
+  }
+
   document.addEventListener(listenerType, function (e) {
     const { type, payload } = e.detail || {}
     switch (type) {
+      case dispatchType.Preload:
+        storageValue = payload
+
+        if (listeners.length) {
+          // 说明已经触发过媒体查询了，因此要执行监听返回当前的主题
+          emitListeners()
+        }
+        break
+      case dispatchType.UpdateStorage:
+        storageValue = Object.assign(storageValue, payload)
+        break
       case dispatchType.SaveSchemeValue:
         localStorage.setItem(localThemeKey, payload)
 
-        // 主动执行监听函数
-        mediaList.forEach(item => {
-          const { media } = item.mediaQueryList
-          const { matches } = item.proxyMediaQueryList
-
-          try {
-            item.watch({
-              matches,
-              media,
-            })
-          } catch (error) {
-            console.error('theme-color-switch: Trigger listening failed')
-          }
-        })
+        emitListeners()
         break
     }
   })
-
-  // document.dispatchEvent(
-  //   new CustomEvent('matchMedia-script', {
-  //     detail: 'test',
-  //   }),
-  // )
 })()

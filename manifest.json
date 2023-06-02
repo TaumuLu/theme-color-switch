@@ -17,6 +17,11 @@
   },
   "content_scripts": [
     {
+      "js": ["src/contents/preload.ts"],
+      "matches": ["<all_urls>"],
+      "run_at": "document_start"
+    },
+    {
       "js": ["src/contents/index.ts"],
       "matches": ["<all_urls>"],
       "run_at": "document_end"

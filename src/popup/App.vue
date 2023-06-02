@@ -21,18 +21,35 @@
           @change="onChange"
         />
       </div>
+      <!-- <div class="popup-body__enhanced">
+        <p>开启增强模式</p>
+      </div> -->
+    </div>
+    <!-- <div class="popup-footer"></div> -->
+    <div :class="`popup-mask ${isEnable ? '' : 'disabled'}`">
+      <el-switch
+        v-model="isEnable"
+        class="ml-2"
+        style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
+        active-text="已启用"
+        inactive-text="已禁用"
+        inline-prompt
+        @change="onEnable"
+      />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { MessageType, ThemeValue } from '../constant'
+import { MessageType, ThemeValue, StorageKey } from '../constant'
 import { getCurrentTabId, sendMessage } from '../utils/tabMessage'
+import { getStorageValue, setStorageValue } from '../utils/storage'
 
 const isDark = ref(true)
 const host = ref('')
 const isLoad = ref(false)
+const isEnable = ref(true)
 
 // 同步到 content 修改主题色
 const onChange = (value: any) => {
@@ -42,8 +59,23 @@ const onChange = (value: any) => {
   })
 }
 
-// 触发 ContentLoad 事件
-sendMessage({ type: MessageType.EmitContentLoad })
+const onEnable = (value: any) => {
+  setStorageValue(StorageKey.Enable, value).then(() => {
+    getCurrentTabId().then(tabId => {
+      if (tabId) {
+        // eslint-disable-next-line no-undef
+        chrome.tabs.reload(tabId)
+      }
+    })
+  })
+}
+
+getStorageValue(StorageKey.Enable).then(value => {
+  isEnable.value = value
+})
+
+// 触发 PreLoad 事件
+sendMessage({ type: MessageType.EmitPreLoad })
 
 // eslint-disable-next-line no-undef
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -101,6 +133,7 @@ body {
   padding: 0px 20px 20px;
   display: flex;
   flex-direction: column;
+  /* border-bottom: 1px solid #e6e6e6; */
 
   &__top {
     margin-bottom: 12px;
@@ -160,7 +193,30 @@ body {
   }
 }
 
+.popup-mask {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+
+  .el-switch {
+    margin-right: 12px;
+    margin-top: 20px;
+  }
+
+  &.disabled {
+    bottom: 0;
+    left: 0;
+    cursor: not-allowed;
+    background-color: rgba($color: #000, $alpha: 0.6);
+  }
+}
+
 .popup-box {
+  position: relative;
+
   &.dark {
     background-color: #1b1b1b;
     color: #fff;
@@ -178,6 +234,12 @@ body {
         .el-switch__core {
           background-color: #fff;
         }
+      }
+    }
+
+    .popup-mask {
+      &.disabled {
+        background-color: rgba($color: #ffff, $alpha: 0.6);
       }
     }
   }
