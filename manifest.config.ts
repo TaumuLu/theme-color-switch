@@ -10,10 +10,12 @@ const [major, minor, patch, label = '0'] = version
   // split into version parts
   .split(/[.-]/)
 
-const name = packageJson.name
-  .split('-')
-  .map(str => str.charAt(0).toUpperCase() + str.slice(1))
-  .join(' ')
+// const name = packageJson.name
+//   .split('-')
+//   .map(str => str.charAt(0).toUpperCase() + str.slice(1))
+//   .join(' ')
+
+const name = '主题色切换'
 
 const icons = {
   16: 'icons/icon16.png',
