@@ -16,10 +16,10 @@ const name = packageJson.name
   .join(' ')
 
 const icons = {
-  16: 'icons/16.png',
-  32: 'icons/32.png',
-  48: 'icons/48.png',
-  128: 'icons/128.png',
+  16: 'icons/icon16.png',
+  32: 'icons/icon32.png',
+  48: 'icons/icon48.png',
+  128: 'icons/icon128.png',
 }
 
 export default defineManifest(async env => {
@@ -35,5 +35,7 @@ export default defineManifest(async env => {
       ...manifestJson.action,
       default_icon: icons,
     },
+    // optional_permissions: ['activeTab'],
+    host_permissions: ['<all_urls>'],
   }
 })

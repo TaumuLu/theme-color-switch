@@ -20,8 +20,7 @@
       "run_at": "document_end"
     }
   ],
-  "permissions": ["activeTab", "tabs", "storage", "scripting"],
-  "host_permissions": ["http://*/*", "https://*/*"],
+  "permissions": ["tabs", "storage", "scripting"],
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'; style-src 'self' 'unsafe-inline'; media-src *"
   },

@@ -1,7 +1,7 @@
 <template>
   <div :class="`popup-box ${isDark ? 'dark' : 'light'}`">
     <div class="popup-header">
-      <img alt="Vue logo" src="/icons/128.png" />
+      <img alt="Vue logo" src="/icons/icon128.png" />
       <h2>主题色切换</h2>
     </div>
     <div class="popup-body">
