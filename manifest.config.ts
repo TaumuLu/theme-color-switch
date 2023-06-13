@@ -1,6 +1,7 @@
-import { defineManifest } from '@crxjs/vite-plugin'
+import { type ConfigEnv } from 'vite'
 import packageJson from './package.json'
 import manifestJson from './manifest.json'
+import { name, domain, icons } from './src/constant/config'
 const { version } = packageJson
 
 // Convert from Semver (example: 0.1.0-beta6)
@@ -15,16 +16,7 @@ const [major, minor, patch, label = '0'] = version
 //   .map(str => str.charAt(0).toUpperCase() + str.slice(1))
 //   .join(' ')
 
-const name = '主题色切换'
-
-const icons = {
-  16: 'icons/icon16.png',
-  32: 'icons/icon32.png',
-  48: 'icons/icon48.png',
-  128: 'icons/icon128.png',
-}
-
-export default defineManifest(async env => {
+export default async (env: ConfigEnv) => {
   return {
     ...manifestJson,
     name: env.mode !== 'production' ? `![DEV] ${name}` : name,
@@ -39,6 +31,12 @@ export default defineManifest(async env => {
     },
     // optional_permissions: ['activeTab'],
     // host_permissions: ['<all_urls>'],
-    host_permissions: ['*://mp.weixin.qq.com/*', '*://sspai.com/*'],
+    host_permissions: [...domain],
+    content_scripts: manifestJson.content_scripts.map(item => {
+      return {
+        ...item,
+        matches: [...domain],
+      }
+    }),
   }
-})
+}

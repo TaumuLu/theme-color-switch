@@ -1,5 +1,6 @@
 import { MessageType, StorageKey } from '../constant'
 import { getStorageValue } from '../utils/storage'
+import { domain } from '../constant/config'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // import preload from '../contents/preload?script'
 
@@ -19,7 +20,7 @@ const registerMatchMedia = async () => {
           {
             id: matchMediaId,
             js: ['matchMedia.js'],
-            matches: ['<all_urls>'],
+            matches: domain,
             runAt: 'document_start',
             world: 'MAIN',
           },
