@@ -19,6 +19,7 @@ window.matchMedia('(prefers-color-scheme: dark)')
 - https://theme-next.org/index.html
 - https://developer.mozilla.org/docs/Web
 - https://learn.microsoft.com/zh-cn/microsoft-edge/extensions-chromium/publish/publish-extension
+- https://mp.weixin.qq.com/s/PyHJGz7SkKoWHlrmS7KZfA
 
 ## 相关网站
 

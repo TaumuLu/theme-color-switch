@@ -1,5 +1,6 @@
 ;(function () {
   const appName = 'theme-color-switch'
+  console.info('\x1B[36m%s\x1B[0m', appName)
   const CSSMediaName = 'prefers-color-scheme'
   const localThemeKey = `${appName}__local-storage`
   const listenerType = `${appName}__content-dispatch`

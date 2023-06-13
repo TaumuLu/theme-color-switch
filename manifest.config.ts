@@ -38,6 +38,7 @@ export default defineManifest(async env => {
       default_icon: icons,
     },
     // optional_permissions: ['activeTab'],
-    host_permissions: ['<all_urls>'],
+    // host_permissions: ['<all_urls>'],
+    host_permissions: ['*://mp.weixin.qq.com/*', '*://sspai.com/*'],
   }
 })
