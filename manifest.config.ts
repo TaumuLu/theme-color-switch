@@ -1,6 +1,9 @@
 import { type ConfigEnv } from 'vite'
+import { defineManifest } from '@crxjs/vite-plugin'
 import packageJson from './package.json'
 import manifestJson from './manifest.json'
+// eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import { name, domain, icons } from './src/constant/config'
 const { version } = packageJson
 
@@ -16,7 +19,7 @@ const [major, minor, patch, label = '0'] = version
 //   .map(str => str.charAt(0).toUpperCase() + str.slice(1))
 //   .join(' ')
 
-export default async (env: ConfigEnv) => {
+export default defineManifest(async (env: ConfigEnv) => {
   return {
     ...manifestJson,
     name: env.mode !== 'production' ? `![DEV] ${name}` : name,
@@ -39,4 +42,4 @@ export default async (env: ConfigEnv) => {
       }
     }),
   }
-}
+})
