@@ -59,6 +59,23 @@ chrome.runtime.onInstalled.addListener(() => {
       unRegisterMatchMedia()
     }
   })
+
+  chrome.action.disable()
+
+  chrome.declarativeContent.onPageChanged.removeRules(undefined, () => {
+    const rules = domain.map(item => {
+      const hostSuffix = item.replace(/[^A-Za-z]*(.*\..*)\/.*/, (m, $1) => $1)
+      return {
+        conditions: [
+          new chrome.declarativeContent.PageStateMatcher({
+            pageUrl: { hostSuffix },
+          }),
+        ],
+        actions: [new chrome.declarativeContent.ShowAction()],
+      }
+    })
+    chrome.declarativeContent.onPageChanged.addRules(rules)
+  })
 })
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {

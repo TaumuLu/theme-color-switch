@@ -8,7 +8,7 @@ export const icons = {
 }
 
 export const domain = [
-  '*://*.weixin.qq.com/*',
+  '*://*.qq.com/*',
   '*://sspai.com/*',
   '*://*.mozilla.org/*',
   '*://*.microsoft.com/*',
