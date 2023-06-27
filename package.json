@@ -4,7 +4,8 @@
   "version": "0.1.0",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc --noEmit && vite build",
+    "build": "vue-tsc --noEmit && vite build && npm run manifest",
+    "manifest": "node ./scripts/manifest",
     "zip": "zip -r dist.zip ./dist",
     "clean": "rimraf -rf ./*.zip ./*.crx",
     "preview": "vite preview",

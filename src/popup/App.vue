@@ -117,11 +117,14 @@ const onEnhanced = (value: any) => {
 
 // eslint-disable-next-line no-undef
 chrome.tabs.onUpdated.addListener(async (id, changeInfo, tab) => {
-  const status = changeInfo.status
-  if (status === 'loading') {
-    tabLoading.value = true
-  }
-  if (status === 'complete') {
+  // if (status === 'loading') {
+  //   tabLoading.value = true
+  // }
+  if (
+    changeInfo.status === 'complete' ||
+    changeInfo.favIconUrl ||
+    changeInfo.title
+  ) {
     tabLoading.value = false
   }
 })
@@ -168,6 +171,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
         isLoad.value = true
         isDark.value = payload.themeValue === ThemeValue.Dark
+        tabLoading.value = false
         host.value = payload.host
       })
   }
