@@ -8,7 +8,7 @@
   "background": {
     "service_worker": "src/background/index.ts"
   },
-  "permissions": ["storage", "scripting", "declarativeContent", "tabs"],
+  "permissions": ["storage", "scripting", "tabs"],
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'; style-src 'self' 'unsafe-inline'; media-src *"
   },
