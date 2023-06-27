@@ -20,6 +20,7 @@ window.matchMedia('(prefers-color-scheme: dark)')
 - https://developer.mozilla.org/docs/Web
 - https://learn.microsoft.com/zh-cn/microsoft-edge/extensions-chromium/publish/publish-extension
 - https://mp.weixin.qq.com/s/PyHJGz7SkKoWHlrmS7KZfA
+- https://mp.weixin.qq.com/s/zb-lkYlgp3iJFm9AMO0RsQ
 
 ## 相关网站
 

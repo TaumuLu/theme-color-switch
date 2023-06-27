@@ -1,7 +1,7 @@
 {
   "name": "theme-color-switch",
   "private": true,
-  "version": "0.0.4",
+  "version": "0.1.0",
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
@@ -13,6 +13,7 @@
     "prepare": "husky install"
   },
   "dependencies": {
+    "@element-plus/icons-vue": "^2.1.0",
     "element-plus": "^2.3.5",
     "lodash.debounce": "^4.0.8",
     "style-media-toggle": "^1.1.4",

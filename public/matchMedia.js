@@ -4,13 +4,13 @@
   const CSSMediaName = 'prefers-color-scheme'
   const localThemeKey = `${appName}__local-storage`
   const listenerType = `${appName}__content-dispatch`
-  const dispatchType = {
+  const DispatchType = {
     Preload: 'preload',
     SaveSchemeValue: 'saveSchemeValue',
     UpdateStorage: 'updateStorage',
   }
-  let storageValue = {
-    enable: false,
+  const storageValue = {
+    enable: true,
   }
 
   const matchMedia = window.matchMedia
@@ -114,18 +114,18 @@
   document.addEventListener(listenerType, function (e) {
     const { type, payload } = e.detail || {}
     switch (type) {
-      case dispatchType.Preload:
-        storageValue = payload
+      // case DispatchType.Preload:
+      //   storageValue = payload
 
-        if (listeners.length) {
-          // 说明已经触发过媒体查询了，因此要执行监听返回当前的主题
-          emitListeners()
-        }
-        break
-      case dispatchType.UpdateStorage:
-        storageValue = Object.assign(storageValue, payload)
-        break
-      case dispatchType.SaveSchemeValue:
+      //   if (listeners.length) {
+      //     // 说明已经触发过媒体查询了，因此要执行监听返回当前的主题
+      //     emitListeners()
+      //   }
+      //   break
+      // case DispatchType.UpdateStorage:
+      //   storageValue = Object.assign(storageValue, payload)
+      //   break
+      case DispatchType.SaveSchemeValue:
         localStorage.setItem(localThemeKey, payload)
 
         emitListeners()

@@ -8,19 +8,7 @@
   "background": {
     "service_worker": "src/background/index.ts"
   },
-  "content_scripts": [
-    {
-      "js": ["src/contents/preload.ts"],
-      "matches": ["<all_urls>"],
-      "run_at": "document_start"
-    },
-    {
-      "js": ["src/contents/index.ts"],
-      "matches": ["<all_urls>"],
-      "run_at": "document_end"
-    }
-  ],
-  "permissions": ["storage", "scripting", "declarativeContent"],
+  "permissions": ["storage", "scripting", "declarativeContent", "tabs"],
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'; style-src 'self' 'unsafe-inline'; media-src *"
   },

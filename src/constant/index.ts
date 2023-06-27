@@ -1,3 +1,6 @@
+import { type Dict } from '../types'
+import { defaultHosts } from './config'
+
 export const appName = 'theme-color-switch'
 
 export enum ThemeValue {
@@ -45,15 +48,26 @@ export enum DispatchType {
 }
 
 export enum StorageKey {
-  GlobalThemeKey = 'theme-color',
-  EnhancedMode = 'enhanced-mode',
-  Enable = 'enable',
+  Domain = 'domain',
+}
+
+export interface DomainValue {
+  enhanced: boolean
+  enable: boolean
+}
+
+export const defaultDomain: DomainValue = {
+  enhanced: false,
+  enable: true,
 }
 
 export const defaultStorage = {
-  [StorageKey.GlobalThemeKey]: ThemeValue.Dark,
-  [StorageKey.EnhancedMode]: true,
-  [StorageKey.Enable]: true,
+  [StorageKey.Domain]: defaultHosts.reduce<Dict<DomainValue>>((p, c) => {
+    return {
+      ...p,
+      [c]: { ...defaultDomain },
+    }
+  }, {}),
 }
 
 export type DefaultStorage = typeof defaultStorage

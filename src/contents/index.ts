@@ -10,7 +10,6 @@ import {
   styleAttrTag,
   EmitType,
   styleAttrReverse,
-  StorageKey,
 } from '@/constant'
 import {
   getCssText,
@@ -21,7 +20,6 @@ import {
   onStyleObserver,
   replaceCssText,
 } from './help'
-import { getStorageValue } from '../utils/storage'
 
 let lightRules: CSSMediaRule[] = []
 let darkRules: CSSMediaRule[] = []
@@ -142,8 +140,8 @@ let isObserver = false
 
 const onSwitch = async () => {
   // 是否启用
-  const isEnable = await getStorageValue(StorageKey.Enable)
-  if (!isEnable) return
+  // const isEnable = await getStorageValue(StorageKey.Enable)
+  // if (!isEnable) return
 
   const curThemeValue = getThemeValue()
   const isDark = getIsDark()
@@ -152,9 +150,9 @@ const onSwitch = async () => {
   // 初始化 style 标签，只执行一次
   if (!isInitStyle) {
     await onInitStyle()
-    const enhancedMode = await getStorageValue(StorageKey.EnhancedMode)
+    // const enhancedMode = await getStorageValue(StorageKey.EnhancedMode)
 
-    if (enhancedMode && !isObserver) {
+    if (!isObserver) {
       onStyleObserver(
         () => {
           // console.info('onInitStyle')

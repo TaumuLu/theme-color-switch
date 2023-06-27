@@ -1,5 +1,3 @@
-export const name = '主题色切换'
-
 export const icons = {
   16: 'icons/icon16.png',
   32: 'icons/icon32.png',
@@ -7,10 +5,18 @@ export const icons = {
   128: 'icons/icon128.png',
 }
 
-export const domain = [
-  '*://*.qq.com/*',
-  '*://sspai.com/*',
-  '*://*.mozilla.org/*',
-  '*://*.microsoft.com/*',
-  '*://theme-next.org/*',
+export const defaultHosts = [
+  'mp.weixin.qq.com',
+  'sspai.com',
+  'developer.mozilla.org',
+  'learn.microsoft.com',
+  'theme-next.org',
 ]
+
+export const getMatch = (domain: string) => {
+  return `*://${domain}${domain.endsWith('/') ? '' : '/'}*`
+}
+
+export const getMatches = (domains: string[]) => {
+  return domains.map(domain => getMatch(domain))
+}

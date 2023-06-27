@@ -4,7 +4,8 @@ import packageJson from './package.json'
 import manifestJson from './manifest.json'
 // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import { name, domain, icons } from './src/constant/config'
+import { defaultHosts, getMatches, icons } from './src/constant/config'
+
 const { version } = packageJson
 
 // Convert from Semver (example: 0.1.0-beta6)
@@ -14,15 +15,16 @@ const [major, minor, patch, label = '0'] = version
   // split into version parts
   .split(/[.-]/)
 
-// const name = packageJson.name
-//   .split('-')
-//   .map(str => str.charAt(0).toUpperCase() + str.slice(1))
-//   .join(' ')
+const name = packageJson.name
+  .split('-')
+  .map(str => str.charAt(0).toUpperCase() + str.slice(1))
+  .join(' ')
 
 export default defineManifest(async (env: ConfigEnv) => {
+  const isDev = env.mode !== 'production'
   return {
     ...manifestJson,
-    name: env.mode !== 'production' ? `![DEV] ${name}` : name,
+    name: isDev ? `![DEV] ${name}` : name,
     // up to four numbers separated by dots
     version: `${major}.${minor}.${patch}.${label}`,
     // semver is OK in "version_name"
@@ -34,12 +36,24 @@ export default defineManifest(async (env: ConfigEnv) => {
     },
     // optional_permissions: ['activeTab'],
     // host_permissions: ['<all_urls>'],
-    host_permissions: [...domain],
-    content_scripts: manifestJson.content_scripts.map(item => {
-      return {
-        ...item,
-        matches: [...domain],
-      }
-    }),
+    host_permissions: [...getMatches(defaultHosts)],
+    optional_host_permissions: ['<all_urls>'],
+    content_scripts: [
+      // {
+      //   js: ['src/contents/preload.ts'],
+      //   matches: ['<all_urls>'],
+      //   run_at: 'document_start',
+      // },
+      // {
+      //   js: ['src/contents/index.ts'],
+      //   matches: ['<all_urls>'],
+      //   run_at: 'document_end',
+      // },
+      {
+        js: ['src/contents/preload.ts', 'src/contents/index.ts'],
+        matches: ['http://www.baidu.com/'],
+        run_at: 'document_start',
+      },
+    ].filter(Boolean),
   }
 })

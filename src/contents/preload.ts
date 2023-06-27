@@ -1,10 +1,4 @@
-import {
-  DispatchType,
-  MessageType,
-  defaultStorage,
-  dispatchEventType,
-} from '../constant'
-import { getStorage } from '../utils/storage'
+import { MessageType } from '../constant'
 import { getThemeValue } from './help'
 
 const onPreLoad = () => {
@@ -17,18 +11,21 @@ const onPreLoad = () => {
   })
 }
 
-const onInit = () => {
-  getStorage(defaultStorage).then(value => {
-    document.dispatchEvent(
-      new CustomEvent(dispatchEventType, {
-        detail: {
-          type: DispatchType.Preload,
-          payload: value,
-        },
-      }),
-    )
-  })
+// const onDispatchPreload = () => {
+//   getStorage(defaultStorage).then(value => {
+//     document.dispatchEvent(
+//       new CustomEvent(dispatchEventType, {
+//         detail: {
+//           type: DispatchType.Preload,
+//           payload: value,
+//         },
+//       }),
+//     )
+//   })
+// }
 
+const onInit = () => {
+  // onDispatchPreload()
   onPreLoad()
 }
 
@@ -52,18 +49,20 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 })
 
-chrome.storage.onChanged.addListener((changes, namespace) => {
-  const newObj = Object.keys(changes).reduce<any>((p, k) => {
-    p[k] = changes[k].newValue
-    return p
-  }, {})
+// chrome.storage.onChanged.addListener((changes, namespace) => {
+//   const newObj = Object.keys(changes).reduce<any>((p, k) => {
+//     p[k] = changes[k].newValue
+//     return p
+//   }, {})
 
-  document.dispatchEvent(
-    new CustomEvent(dispatchEventType, {
-      detail: {
-        type: DispatchType.UpdateStorage,
-        payload: newObj,
-      },
-    }),
-  )
-})
+//   document.dispatchEvent(
+//     new CustomEvent(dispatchEventType, {
+//       detail: {
+//         type: DispatchType.UpdateStorage,
+//         payload: newObj,
+//       },
+//     }),
+//   )
+// })
+
+export default {}
