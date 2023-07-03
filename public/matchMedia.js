@@ -3,15 +3,20 @@
   console.info('\x1B[36m%s\x1B[0m', appName)
   const CSSMediaName = 'prefers-color-scheme'
   const localThemeKey = `${appName}__local-storage`
-  const listenerType = `${appName}__content-dispatch`
+
+  const DispatchEventType = {
+    Switch: `${appName}__dispatch-switch`,
+    MatchMedia: `${appName}__dispatch-matchMedia`,
+  }
+
   const DispatchType = {
     Preload: 'preload',
     SaveSchemeValue: 'saveSchemeValue',
     UpdateStorage: 'updateStorage',
+    GetListeners: 'getListeners',
   }
-  const storageValue = {
-    enable: true,
-  }
+
+  const listeners = []
 
   const matchMedia = window.matchMedia
 
@@ -30,27 +35,43 @@
     return curThemeValue
   }
 
+  const emitGetListeners = () => {
+    document.dispatchEvent(
+      new CustomEvent(DispatchEventType.MatchMedia, {
+        detail: {
+          type: DispatchType.GetListeners,
+          payload: {
+            listenerCount: listeners.length,
+            listenerTotal: listeners.reduce((p, c) => p + c.list.size, 0),
+          },
+        },
+      }),
+    )
+  }
+
   const getAddListener = mediaQueryList => {
     const list = new Set()
     const watch = e => {
       list.forEach(fn => fn(e))
     }
     mediaQueryList.addListener(watch)
+    emitGetListeners()
 
     return {
       mediaQueryList,
       proxyMediaQueryList: null,
       addListener(fn) {
         list.add(fn)
+        emitGetListeners()
       },
       removeListener(fn) {
         list.delete(fn)
+        emitGetListeners()
       },
       watch,
+      list,
     }
   }
-
-  const listeners = []
 
   window.matchMedia = (mediaText, ...other) => {
     const result = matchMedia(mediaText, ...other)
@@ -93,8 +114,6 @@
   }
 
   const emitListeners = () => {
-    if (!storageValue.enable) return
-
     // 主动执行监听函数
     listeners.forEach(item => {
       const { media } = item.mediaQueryList
@@ -111,7 +130,7 @@
     })
   }
 
-  document.addEventListener(listenerType, function (e) {
+  document.addEventListener(DispatchEventType.Switch, function (e) {
     const { type, payload } = e.detail || {}
     switch (type) {
       // case DispatchType.Preload:
@@ -129,6 +148,9 @@
         localStorage.setItem(localThemeKey, payload)
 
         emitListeners()
+        break
+      case DispatchType.GetListeners:
+        emitGetListeners()
         break
     }
   })

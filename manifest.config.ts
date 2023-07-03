@@ -50,7 +50,7 @@ export default defineManifest(async (env: ConfigEnv) => {
       //   run_at: 'document_end',
       // },
       {
-        js: ['src/contents/preload.ts', 'src/contents/index.ts'],
+        js: ['src/contents/preload.ts', 'src/contents/switch.ts'],
         matches: ['http://www.baidu.com/'],
         run_at: 'document_start',
       },

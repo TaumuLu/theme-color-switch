@@ -7,10 +7,10 @@ export const icons = {
 
 export const defaultHosts = [
   'mp.weixin.qq.com',
-  'sspai.com',
   'developer.mozilla.org',
-  'learn.microsoft.com',
   'theme-next.org',
+  'sspai.com',
+  'learn.microsoft.com',
 ]
 
 export const getMatch = (domain: string) => {

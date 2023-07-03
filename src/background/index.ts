@@ -1,6 +1,8 @@
-import { MessageType } from '../constant'
+import { type DomainValue, MessageType, defaultDomain } from '../constant'
 import { getMatch } from '../constant/config'
-import { getDomains } from '../utils/domain'
+import { type Dict } from '../types'
+import { getDomain, getDomains, setDomain, setDomains } from '../utils/domain'
+import { getCurrentTabId } from '../utils/tabMessage'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // import preload from '../contents/preload?script'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -37,24 +39,19 @@ const contentScripts: chrome.scripting.RegisteredContentScript[] = [
 
 type RegisteredContentScript = chrome.scripting.RegisteredContentScript
 
-const registerMatchMedia = async () => {
+const registerScripts = async () => {
   return await chrome.scripting
     .getRegisteredContentScripts({
       ids: contentScripts.map(item => item.id),
     })
     .then(async res => {
       const domainValue = await getDomains()
-      const enables: string[] = []
-      const enhanced: string[] = []
+      const matches: string[] = []
       Object.keys(domainValue).forEach(key => {
         const value = domainValue[key]
         if (value.enable) {
           const host = getMatch(key)
-          enables.push(host)
-
-          if (value.enhanced) {
-            enhanced.push(host)
-          }
+          matches.push(host)
         }
       })
 
@@ -64,7 +61,6 @@ const registerMatchMedia = async () => {
       const unregisterList: string[] = []
 
       contentScripts.forEach(item => {
-        const matches = item.id === matchMediaId ? enhanced : enables
         if (!ids.includes(item.id)) {
           if (matches.length > 0) {
             // 新注册
@@ -109,7 +105,7 @@ const registerMatchMedia = async () => {
 }
 
 chrome.runtime.onInstalled.addListener(() => {
-  registerMatchMedia()
+  registerScripts()
 
   // chrome.action.disable()
 
@@ -129,14 +125,60 @@ chrome.runtime.onInstalled.addListener(() => {
   // })
 })
 
+const onUpdateDomain = async (key: string, value: Partial<DomainValue>) => {
+  const domain = await getDomain(key)
+  return await setDomain(key, { ...domain, ...value }).then(async () => {
+    return await registerScripts()
+  })
+}
+
+const onUpdateDomains = async (values: Dict<DomainValue>) => {
+  const domains = await getDomains()
+  return await setDomains({ ...domains, ...values }).then(async () => {
+    return await registerScripts()
+  })
+}
+
+chrome.permissions.onAdded.addListener(permissions => {
+  const { origins } = permissions
+  const values: Dict<DomainValue> = {}
+  origins?.forEach(origin => {
+    const host = origin.replace(/.*\/(.*)\/.*/, '$1')
+    values[host] = {
+      ...defaultDomain,
+      enable: true,
+    }
+  })
+  onUpdateDomains(values).then(() => {
+    getCurrentTabId().then(tabId => {
+      if (tabId) {
+        chrome.tabs.reload(tabId)
+      }
+    })
+  })
+})
+
+// chrome.runtime.onConnect.addListener(function (port) {
+//   if (port.name === 'popup') {
+//     port.onDisconnect.addListener(function () {
+//       console.log('popup has been closed')
+//     })
+//   }
+// })
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   // const tab = sender.tab
   // const senderId = sender.tab?.id
-  // const payload = request.payload
+  const payload = request.payload
 
   switch (request.type) {
     case MessageType.RegisterContentScripts:
-      registerMatchMedia().then(res => {
+      registerScripts().then(res => {
+        sendResponse({ payload: res })
+      })
+      return true
+    case MessageType.UpdateDomain:
+      onUpdateDomain(payload.key, payload.value).then(res => {
         sendResponse({ payload: res })
       })
       return true
@@ -146,4 +188,5 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     //   })
     //   return true
   }
+  sendResponse()
 })

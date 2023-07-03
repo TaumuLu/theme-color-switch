@@ -5,7 +5,7 @@ import {
   MessageType,
   darkStyleId,
   lightStyleId,
-  dispatchEventType,
+  DispatchEventType,
   DispatchType,
   styleAttrTag,
   EmitType,
@@ -20,6 +20,7 @@ import {
   onStyleObserver,
   replaceCssText,
 } from './help'
+import { type StyleStatus } from '../types'
 
 let lightRules: CSSMediaRule[] = []
 let darkRules: CSSMediaRule[] = []
@@ -83,7 +84,7 @@ const onInitStyle = async () => {
             style.innerText = getCssText(filterCssRules)
             ownerNode?.parentNode?.insertBefore(style, ownerNode)
           }
-          // 只要发生变化了都删除节点
+          // 只要发生变化了都删除原节点
           ownerNode?.parentNode?.removeChild(ownerNode)
         }
       }
@@ -94,13 +95,7 @@ const onInitStyle = async () => {
 
   darkRules = darkRules.concat(newDarkRules)
   lightRules = lightRules.concat(newLightRules)
-
-  // console.log(
-  //   22222,
-  //   document.styleSheets.length,
-  //   lightRules.length,
-  //   darkRules.length,
-  // )
+  emitPutStyleStatus()
 }
 
 const applyStyleRules = (themValue: ThemeValue, isReverse = false) => {
@@ -160,6 +155,10 @@ const onSwitch = async () => {
           onSwitch()
         },
         node => {
+          // 样式未初始化完成不监听
+          if (!isInitStyle) {
+            return EmitType.False
+          }
           if (node instanceof HTMLElement) {
             const tag = node.getAttribute(styleAttrTag)
             // 标记过的修改除外
@@ -191,19 +190,15 @@ const onSwitch = async () => {
   }
 }
 
-// 初始化检查执行
-const onInit = () => {
-  const isDark = getIsDark()
-  const isLocalDark = getIsLocalDark()
-  const isSame = isDark ? isLocalDark : !isLocalDark
-
-  // 仅第一次判断下是否需要切换
-  if (!isSame) {
-    onSwitch()
-  }
+const emitGetListeners = () => {
+  document.dispatchEvent(
+    new CustomEvent(DispatchEventType.Switch, {
+      detail: {
+        type: DispatchType.GetListeners,
+      },
+    }),
+  )
 }
-
-onInit()
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   const { payload } = request
@@ -212,18 +207,60 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     case MessageType.SetContentThemeValue:
       // 通知内容脚本修改 localStorage，同时触发 js 端监听函数
       document.dispatchEvent(
-        new CustomEvent(dispatchEventType, {
+        new CustomEvent(DispatchEventType.Switch, {
           detail: {
             type: DispatchType.SaveSchemeValue,
-            payload,
+            payload: payload.themeValue,
           },
         }),
       )
       // 无论什么情况都再执行设置一次
-      window.localStorage.setItem(localThemeKey, payload)
+      window.localStorage.setItem(localThemeKey, payload.themeValue)
 
-      // 执行切换逻辑
-      onSwitch()
+      if (!payload.refresh) {
+        // 执行切换逻辑
+        onSwitch()
+      }
+      break
+    case MessageType.GetStyleStatus:
+      emitGetListeners()
+      break
+  }
+  sendResponse()
+})
+
+const emitPutStyleStatus = (value?: Partial<StyleStatus>) => {
+  chrome.runtime.sendMessage({
+    type: MessageType.PutStyleStatus,
+    payload: {
+      ...value,
+      lightRules: lightRules.length,
+      darkRules: darkRules.length,
+      isDark: getIsDark(),
+    },
+  })
+}
+
+document.addEventListener(DispatchEventType.MatchMedia, function (e: any) {
+  const { type, payload } = e.detail || {}
+
+  switch (type) {
+    case DispatchType.GetListeners:
+      emitPutStyleStatus(payload)
       break
   }
 })
+
+// 初始化检查执行
+const onInit = () => {
+  const isDark = getIsDark()
+  const isLocalDark = getIsLocalDark()
+  const isSame = isDark === isLocalDark
+
+  // 仅第一次判断下是否需要切换
+  if (!isSame) {
+    onSwitch()
+  }
+}
+
+onInit()

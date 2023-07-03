@@ -13,7 +13,7 @@ export const getCurrentTab = async (queryInfo?: chrome.tabs.QueryInfo) => {
 }
 
 export const getCurrentTabId = async (queryInfo?: chrome.tabs.QueryInfo) => {
-  return await getCurrentTab(queryInfo).then(tab => tab.id)
+  return await getCurrentTab(queryInfo).then(tab => tab?.id)
 }
 
 export const sendMessage = <R = any>(

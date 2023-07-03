@@ -74,19 +74,23 @@ export const onStyleObserver = (
       if (isWatch) {
         if (linkNodes.length) {
           // 等待 link 标签加载完再通知回调
-          Promise.all(
+          Promise.allSettled(
             linkNodes.map(async link => {
               await new Promise<void>((resolve, reject) => {
                 link.addEventListener('load', () => {
                   resolve()
                 })
-                link.addEventListener('load', e => {
+                link.addEventListener('error', e => {
                   reject(e)
                 })
               })
             }),
-          ).finally(() => {
-            onWatch(mutations)
+          ).then(res => {
+            const flag = res.some(item => item.status === 'fulfilled')
+            // 只要有一个成功就执行
+            if (flag) {
+              onWatch(mutations)
+            }
           })
         } else {
           onWatch(mutations)
@@ -99,8 +103,6 @@ export const onStyleObserver = (
 
 // 替换 link 标签
 export const insertCrossOrigin = async () => {
-  const head = document.head
-
   return await Promise.all(
     Array.from(document.querySelectorAll('link[rel=stylesheet]')).map(
       // eslint-disable-next-line @typescript-eslint/promise-function-async
@@ -108,12 +110,14 @@ export const insertCrossOrigin = async () => {
         if (linkEl.getAttribute('crossorigin') !== 'anonymous') {
           const newLink = linkEl.cloneNode() as HTMLLinkElement
           newLink.setAttribute('crossorigin', 'anonymous')
-          head.appendChild(newLink)
+
+          const parentNode = linkEl.parentNode ?? document.head
+          parentNode.appendChild(newLink)
 
           return new Promise<void>((resolve, reject) => {
             newLink.onload = () => {
               if (linkEl.parentNode != null) {
-                head.removeChild(linkEl)
+                linkEl.parentNode.removeChild(linkEl)
               }
               resolve()
             }

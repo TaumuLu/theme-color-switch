@@ -1,7 +1,7 @@
 ## Chrome
 
 - [开发者控制台地址](https://chrome.google.com/webstore/devconsole)
-- [已发布扩展地址](https://chrome.google.com/webstore/detail/%E4%B8%BB%E9%A2%98%E8%89%B2%E5%88%87%E6%8D%A2/mgmpaknickmjdkgacgnkdgakngohhfje?hl=zh-CN&authuser=0)
+- [已发布扩展地址](https://chrome.google.com/webstore/detail/theme-color-switch/mgmpaknickmjdkgacgnkdgakngohhfje)
 
 ### 应用商店描述
 

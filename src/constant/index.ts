@@ -25,6 +25,9 @@ export enum MessageType {
   ContentLoad = 'contentLoad',
   EmitContentLoad = 'emitContentLoad',
   EmitPreLoad = 'emitPreLoad',
+  GetStyleStatus = 'GetStyleStatus',
+  PutStyleStatus = 'PutStyleStatus',
+  UpdateDomain = 'UpdateDomain',
 }
 
 export interface SendMessage<P = any> {
@@ -39,12 +42,16 @@ export interface ResponseMessage<P = any> {
 export const darkStyleId = `${appName}__dark-id`
 export const lightStyleId = `${appName}__light-id`
 
-export const dispatchEventType = `${appName}__content-dispatch`
+export const enum DispatchEventType {
+  Switch = `${appName}__dispatch-switch`,
+  MatchMedia = `${appName}__dispatch-matchMedia`,
+}
 
 export enum DispatchType {
   Preload = 'preload',
   SaveSchemeValue = 'saveSchemeValue',
   UpdateStorage = 'updateStorage',
+  GetListeners = 'getListeners',
 }
 
 export enum StorageKey {
@@ -52,17 +59,17 @@ export enum StorageKey {
 }
 
 export interface DomainValue {
-  enhanced: boolean
   enable: boolean
+  // excludePath: string[]
 }
 
 export const defaultDomain: DomainValue = {
-  enhanced: false,
   enable: true,
+  // excludePath: [],
 }
 
 export const defaultStorage = {
-  [StorageKey.Domain]: defaultHosts.reduce<Dict<DomainValue>>((p, c) => {
+  [StorageKey.Domain]: defaultHosts.reduce<Dict<DomainValue>>((p, c, i) => {
     return {
       ...p,
       [c]: { ...defaultDomain },

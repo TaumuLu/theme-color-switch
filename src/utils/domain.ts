@@ -11,7 +11,7 @@ export const setDomains = async (value: Dict<DomainValue>) => {
 }
 
 export const getDomain = async (host: string) => {
-  return await getDomains().then(value => value[host] || {})
+  return await getDomains().then(value => value[host] || { ...defaultDomain })
 }
 
 export const removeDomain = async (host: string) => {
