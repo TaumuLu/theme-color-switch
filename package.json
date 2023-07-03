@@ -16,8 +16,6 @@
   "dependencies": {
     "@element-plus/icons-vue": "^2.1.0",
     "element-plus": "^2.3.5",
-    "lodash.debounce": "^4.0.8",
-    "style-media-toggle": "^1.1.4",
     "vue": "^3.2.25"
   },
   "devDependencies": {
@@ -25,7 +23,6 @@
     "@commitlint/config-conventional": "^17.6.3",
     "@crxjs/vite-plugin": "^1.0.14",
     "@types/chrome": "0.0.237",
-    "@types/lodash.debounce": "^4.0.7",
     "@typescript-eslint/eslint-plugin": "^5.59.8",
     "@vitejs/plugin-vue": "^2.3.4",
     "eslint": "^8.41.0",
