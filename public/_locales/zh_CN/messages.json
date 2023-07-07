@@ -1,0 +1,79 @@
+{
+  "extName": {
+    "message": "主题色切换",
+    "description": "名称"
+  },
+  "extDescription": {
+    "message": "主动切换任一网页主题色的扩展，而无需跟随系统遵循浏览器统一的主题色风格",
+    "description": "描述"
+  },
+  "current_site": {
+    "message": "当前网站"
+  },
+  "current_mode": {
+    "message": "当前模式"
+  },
+  "dark_mode": {
+    "message": "深色模式"
+  },
+  "light_mode": {
+    "message": "浅色模式"
+  },
+  "current_site_information": {
+    "message": "当前网站信息"
+  },
+  "theme_color_consistent": {
+    "message": "主题色是否一致"
+  },
+  "unanimous": {
+    "message": "一致"
+  },
+  "inconsistent": {
+    "message": "不一致"
+  },
+  "call": {
+    "message": "调用"
+  },
+  "call_back": {
+    "message": "回调"
+  },
+  "time": {
+    "message": "次"
+  },
+  "activated": {
+    "message": "已启用"
+  },
+  "disabled": {
+    "message": "已禁用"
+  },
+  "theme_color_style": {
+    "message": "主题色样式"
+  },
+  "dark": {
+    "message": "深色"
+  },
+  "light": {
+    "message": "浅色"
+  },
+  "pcs": {
+    "message": "个"
+  },
+  "encountered_problems_during_use": {
+    "message": "使用过程中遇到问题？"
+  },
+  "to_give_feedback": {
+    "message": "去反馈"
+  },
+  "tip1": {
+    "message": "有调用时，每次切换主题色会刷新页面"
+  },
+  "tip2": {
+    "message": "样式过少时切换可能没什么变化"
+  },
+  "msg1": {
+    "message": "无法获取当前tab信息，请刷新后再次尝试"
+  },
+  "msg2": {
+    "message": "当前页面无法开启此扩展"
+  }
+}

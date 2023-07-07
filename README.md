@@ -1,14 +1,9 @@
-# [主题色切换](https://github.com/TaumuLu/theme-color-switch)
+# 主题色切换
 
-- 可以主动切换任一网页主题色的扩展，而无需跟随系统遵循浏览器统一的主题色风格
-- [Chrome 应用商店地址](https://chrome.google.com/webstore/detail/theme-color-switch/mgmpaknickmjdkgacgnkdgakngohhfje)
-- [Edge 应用商店地址](https://microsoftedge.microsoft.com/addons/detail/bmpdefkcildkmjdlcbbpjjinaijpledn)
-
-## js 获取主题色方式
-
-```javascript
-window.matchMedia('(prefers-color-scheme: dark)')
-```
+- 主动切换任一网页主题色的扩展，而无需跟随系统遵循浏览器统一的主题色风格
+- 安装地址
+  - [Chrome 应用商店地址](https://chrome.google.com/webstore/detail/theme-color-switch/mgmpaknickmjdkgacgnkdgakngohhfje)
+  - [Edge 应用商店地址](https://microsoftedge.microsoft.com/addons/detail/bmpdefkcildkmjdlcbbpjjinaijpledn)
 
 ## 依赖项目
 
@@ -16,6 +11,22 @@ window.matchMedia('(prefers-color-scheme: dark)')
   - https://element-plus.org/zh-CN/component/button.html
 - crxjs
   - https://github.com/crxjs/chrome-extension-tools
+
+## 相关 Api
+
+### js
+
+```javascript
+window.matchMedia('(prefers-color-scheme: dark)')
+```
+
+### css
+
+```css
+@media (prefers-color-scheme: dark) {
+  background: #000;
+}
+```
 
 ## 相关地址
 
@@ -35,6 +46,11 @@ window.matchMedia('(prefers-color-scheme: dark)')
   - https://mp.weixin.qq.com/s/zb-lkYlgp3iJFm9AMO0RsQ
 
 ## ChangeLog
+
+### 0.2.1
+
+- 修复报错
+- 支持多语言
 
 ### 0.2.0
 

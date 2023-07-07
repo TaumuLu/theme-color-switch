@@ -1,8 +1,9 @@
 import { MessageType } from '../constant'
+import { runtimeSendMessage } from '../utils/runtime'
 import { getThemeValue } from './help'
 
 const onPreLoad = () => {
-  chrome.runtime.sendMessage({
+  runtimeSendMessage({
     type: MessageType.ContentLoad,
     payload: {
       themeValue: getThemeValue(),

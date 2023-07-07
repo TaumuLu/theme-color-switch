@@ -11,6 +11,7 @@ export const defaultHosts = [
   'theme-next.org',
   'sspai.com',
   'learn.microsoft.com',
+  'juejin.cn',
 ]
 
 export const getMatch = (domain: string) => {

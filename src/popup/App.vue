@@ -3,23 +3,23 @@
     <div :class="`popup-box ${isDark ? 'dark' : 'light'}`">
       <div class="popup-header">
         <img alt="Vue logo" src="/icons/icon128.png" />
-        <h2>主题色切换</h2>
+        <h2>{{ getMessage('extName') }}</h2>
       </div>
       <div class="popup-body">
         <div class="popup-body__top">
-          <p>当前网站:</p>
+          <p>{{ getMessage('current_site') }}:</p>
           <span>{{ host }}</span>
         </div>
         <div class="popup-body__mode">
-          <p>当前模式:</p>
+          <p>{{ getMessage('current_mode') }}:</p>
           <el-switch
             v-model="isDark"
             style="
               --el-switch-on-color: #1b1b1b;
               --el-switch-off-color: #f7f7f7;
             "
-            active-text="深色模式"
-            inactive-text="浅色模式"
+            :active-text="getMessage('dark_mode')"
+            :inactive-text="getMessage('light_mode')"
             :loading="tabLoading"
             :disabled="!isLoad"
             @change="onSwitch"
@@ -47,59 +47,59 @@
         </div> -->
       </div>
       <div v-if="isEnable" class="popup-footer">
-        <h3>当前网站信息</h3>
+        <h3>{{ getMessage('current_site_information') }}</h3>
         <div class="popup-footer__content">
           <p>
-            <span>与系统主题色是否一致：</span>
-            {{ isSame ? '一致' : '不一致' }}
+            <span>{{ getMessage('theme_color_consistent') }}：</span>
+            {{ getMessage(isSame ? 'unanimous' : 'inconsistent') }}
           </p>
           <p>
             <span
-              >matchMedia 调用
+              >matchMedia {{ getMessage('call') }}
               <el-tooltip
                 :effect="isDark ? 'light' : 'dark'"
-                content="大于0时，每次切换主题色会刷新页面"
+                :content="getMessage('tip1')"
                 placement="top"
               >
                 <el-icon :size="14"><QuestionFilled /></el-icon>
               </el-tooltip>
               ：
             </span>
-            调用 {{ styleStatus.listenerCount }} 次，回调
+            {{ getMessage('call') }} {{ styleStatus.listenerCount }} {{ getMessage('time') }}，{{ getMessage('call_back') }}
             {{ styleStatus.listenerTotal }}
-            个
+            {{ getMessage('pcs') }}
           </p>
           <p>
             <span
-              >主题色样式个数
+              >CSS {{ getMessage('theme_color_style') }}
               <el-tooltip
                 :effect="isDark ? 'light' : 'dark'"
-                content="样式过少时切换可能没什么变化"
+                :content="getMessage('tip2')"
                 placement="top"
               >
                 <el-icon :size="14"><QuestionFilled /></el-icon>
               </el-tooltip>
               ：
             </span>
-            浅色 {{ styleStatus.lightRules }} 个，深色
-            {{ styleStatus.darkRules }} 个
+            {{ getMessage('light') }} {{ styleStatus.lightRules }} {{ getMessage('pcs') }}，{{ getMessage('dark') }}
+            {{ styleStatus.darkRules }} {{ getMessage('pcs') }}
           </p>
         </div>
       </div>
       <div class="popup-bottom">
-        <span>使用过程中遇到问题？</span>
+        <span>{{ getMessage('encountered_problems_during_use') }}</span>
         <a
           href="https://github.com/TaumuLu/theme-color-switch/issues"
           target="_blank"
-          >去反馈</a
+          >{{ getMessage('to_give_feedback') }}</a
         >
       </div>
       <div :class="`popup-mask ${isEnable ? '' : 'disabled'}`">
         <el-switch
           :value="isEnable"
           style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
-          active-text="已启用"
-          inactive-text="已禁用"
+          :active-text="getMessage('activated')"
+          :inactive-text="getMessage('disabled')"
           inline-prompt
           :loading="tabLoading"
           @change="onEnable"
@@ -119,11 +119,12 @@ import { MessageType, ThemeValue, DomainValue } from '../constant'
 import {
   getCurrentTab,
   getCurrentTabId,
-  sendMessage,
+  tabSendMessage,
 } from '../utils/tabMessage'
 import { getDomain } from '../utils/domain'
-import { isNoAccessUrl } from '../utils'
+import { isNoAccessUrl, getMessage } from '../utils'
 import { StyleStatus } from '../types'
+import { runtimeSendMessage } from '../utils/runtime'
 
 const config = reactive({
   max: 3,
@@ -156,14 +157,13 @@ watch(
 
 const onReload = (tabId: number) => {
   tabLoading.value = true
-  // eslint-disable-next-line no-undef
   chrome.tabs.reload(tabId)
 }
 
 // 同步到 content 修改主题色
 const onSwitch = (value: any) => {
   const refresh = isRefresh.value
-  sendMessage(
+  tabSendMessage(
     {
       type: MessageType.SetContentThemeValue,
       payload: {
@@ -185,24 +185,20 @@ const onSwitch = (value: any) => {
 
 const updateDomain = async (key: string, value: Partial<DomainValue>) => {
   const tabId = await getCurrentTabId()
-  // eslint-disable-next-line no-undef
-  return chrome.runtime
-    .sendMessage({
-      type: MessageType.UpdateDomain,
-      payload: {
-        key,
-        value,
-      },
-    })
-    .then(res => {
-      if (res.payload && tabId) {
-        // eslint-disable-next-line no-undef
-        chrome.tabs.reload(tabId)
-        return true
-      } else {
-        return false
-      }
-    })
+  return runtimeSendMessage({
+    type: MessageType.UpdateDomain,
+    payload: {
+      key,
+      value,
+    },
+  }).then(res => {
+    if (res.payload && tabId) {
+      chrome.tabs.reload(tabId)
+      return true
+    } else {
+      return false
+    }
+  })
 }
 
 // const onEnhanced = async (value: any) => {
@@ -218,7 +214,6 @@ const updateDomain = async (key: string, value: Partial<DomainValue>) => {
 //   }
 // }
 
-// eslint-disable-next-line no-undef
 chrome.tabs.onUpdated.addListener(async (id, changeInfo, tab) => {
   // if (status === 'loading') {
   //   tabLoading.value = true
@@ -241,7 +236,7 @@ const onEnable = async (value: any) => {
     if (!tab) {
       ElMessage({
         showClose: true,
-        message: '无法获取当前tab信息，请刷新后再次尝试',
+        message: getMessage('msg1'),
         type: 'error',
       })
       return
@@ -250,19 +245,17 @@ const onEnable = async (value: any) => {
       if (isNoAccessUrl(tab.url)) {
         ElMessage({
           showClose: true,
-          message: '当前页面无法开启此扩展',
+          message: getMessage('msg2'),
           type: 'error',
         })
         return
       }
       const url = new URL(tab.url)
       const addHost = url.host
-      // eslint-disable-next-line no-undef
       await chrome.permissions
         .request({ origins: [`*://${addHost}/*`] })
         .then(granted => {
           if (granted) {
-            console.log(11111)
             key = addHost
           }
         })
@@ -277,14 +270,12 @@ const onEnable = async (value: any) => {
   }
 }
 
-// eslint-disable-next-line no-undef
 // chrome.runtime.connect({ name: 'popup' })
 
 // 初始触发初始事件
-sendMessage({ type: MessageType.EmitPreLoad })
-sendMessage({ type: MessageType.GetStyleStatus })
+tabSendMessage({ type: MessageType.EmitPreLoad })
+tabSendMessage({ type: MessageType.GetStyleStatus })
 
-// eslint-disable-next-line no-undef
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   const senderId = sender.tab?.id
   const { payload, type } = request
@@ -327,7 +318,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
-  min-width: 320px;
+  min-width: 340px;
   display: flex;
   flex-direction: column;
 }

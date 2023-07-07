@@ -15,13 +15,10 @@ const [major, minor, patch, label = '0'] = version
   // split into version parts
   .split(/[.-]/)
 
-const name = packageJson.name
-  .split('-')
-  .map(str => str.charAt(0).toUpperCase() + str.slice(1))
-  .join(' ')
-
 export default defineManifest(async (env: ConfigEnv) => {
   const isDev = env.mode !== 'production'
+  const { name } = manifestJson
+
   return {
     ...manifestJson,
     name: isDev ? `![DEV] ${name}` : name,

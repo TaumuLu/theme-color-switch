@@ -21,6 +21,7 @@ import {
   replaceCssText,
 } from './help'
 import { type StyleStatus } from '../types'
+import { runtimeSendMessage } from '../utils/runtime'
 
 let lightRules: CSSMediaRule[] = []
 let darkRules: CSSMediaRule[] = []
@@ -230,7 +231,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 })
 
 const emitPutStyleStatus = (value?: Partial<StyleStatus>) => {
-  chrome.runtime.sendMessage({
+  runtimeSendMessage({
     type: MessageType.PutStyleStatus,
     payload: {
       ...value,

@@ -2,7 +2,9 @@ module.exports = {
   env: {
     browser: true,
     es2021: true,
+    // chrome: true
   },
+  // webextensions: true,
   parser: 'vue-eslint-parser',
   extends: [
     // 'plugin:vue/vue3-essential',

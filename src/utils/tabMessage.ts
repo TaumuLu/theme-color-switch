@@ -16,13 +16,12 @@ export const getCurrentTabId = async (queryInfo?: chrome.tabs.QueryInfo) => {
   return await getCurrentTab(queryInfo).then(tab => tab?.id)
 }
 
-export const sendMessage = <R = any>(
+export const tabSendMessage = <R = any>(
   message: SendMessage,
   responseCallback: (response: ResponseMessage<R>) => void = () => {},
 ) => {
   getCurrentTabId().then(tabId => {
     if (tabId) {
-      // eslint-disable-next-line no-undef
       chrome.tabs.sendMessage(tabId, message, responseCallback)
     }
   })

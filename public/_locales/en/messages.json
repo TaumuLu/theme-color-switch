@@ -1,0 +1,79 @@
+{
+  "extName": {
+    "message": "Theme Color Switch",
+    "description": "name"
+  },
+  "extDescription": {
+    "message": "Actively switch the theme color extension of any web page without following the system to follow the unified theme color style of the browser",
+    "description": "desc"
+  },
+  "current_site": {
+    "message": "Current site"
+  },
+  "current_mode": {
+    "message": "Current mode"
+  },
+  "dark_mode": {
+    "message": "Dark mode"
+  },
+  "light_mode": {
+    "message": "Light mode"
+  },
+  "current_site_information": {
+    "message": "Current site information"
+  },
+  "theme_color_consistent": {
+    "message": "Is the theme color consistent"
+  },
+  "unanimous": {
+    "message": "Unanimous"
+  },
+  "inconsistent": {
+    "message": "Inconsistent"
+  },
+  "call": {
+    "message": "Call"
+  },
+  "call_back": {
+    "message": "Call back"
+  },
+  "time": {
+    "message": "time"
+  },
+  "activated": {
+    "message": "Activated"
+  },
+  "disabled": {
+    "message": "Disabled"
+  },
+  "theme_color_style": {
+    "message": "Theme color style"
+  },
+  "dark": {
+    "message": "Dark"
+  },
+  "light": {
+    "message": "Light"
+  },
+  "pcs": {
+    "message": "pcs"
+  },
+  "encountered_problems_during_use": {
+    "message": "Encountered problems during use?"
+  },
+  "to_give_feedback": {
+    "message": "To give feedback"
+  },
+  "tip1": {
+    "message": "When there is a call, the page will be refreshed every time the theme color is switched"
+  },
+  "tip2": {
+    "message": "Switching may not change when there are too few styles"
+  },
+  "msg1": {
+    "message": "Unable to get the current tab information, please refresh and try again"
+  },
+  "msg2": {
+    "message": "The current page cannot open this extension"
+  }
+}
