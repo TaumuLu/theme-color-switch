@@ -6,7 +6,7 @@
 ### 应用商店描述
 
 1. 网页主题色切换，深浅主题色一键切换
-2. 主动切换任一网页主题色的扩展，而无需跟随系统遵循浏览器统一的主题色风格
+2. 主动切换任一网页主题色的扩展，无需跟随浏览器统一的主题色风格
 3. 默认针对以下域名 mp.weixin.qq.com、sspai.com、developer.mozilla.org、learn.microsoft.com、theme-next.org、juejin.cn 等
 4. 其他域名需要用户点击授权使用即可
 

@@ -4,7 +4,7 @@
     "description": "名称"
   },
   "extDescription": {
-    "message": "主动切换任一网页主题色的扩展，而无需跟随系统遵循浏览器统一的主题色风格",
+    "message": "主动切换任一网页主题色的扩展，无需跟随浏览器统一的主题色风格",
     "description": "描述"
   },
   "current_site": {

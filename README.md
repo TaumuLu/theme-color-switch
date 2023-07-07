@@ -1,6 +1,6 @@
 # 主题色切换
 
-- 主动切换任一网页主题色的扩展，而无需跟随系统遵循浏览器统一的主题色风格
+- 主动切换任一网页主题色的扩展，无需跟随浏览器统一的主题色风格
 - 安装地址
   - [Chrome 应用商店地址](https://chrome.google.com/webstore/detail/theme-color-switch/mgmpaknickmjdkgacgnkdgakngohhfje)
   - [Edge 应用商店地址](https://microsoftedge.microsoft.com/addons/detail/bmpdefkcildkmjdlcbbpjjinaijpledn)
