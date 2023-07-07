@@ -65,7 +65,8 @@
               </el-tooltip>
               ：
             </span>
-            {{ getMessage('call') }} {{ styleStatus.listenerCount }} {{ getMessage('time') }}，{{ getMessage('call_back') }}
+            {{ getMessage('call') }} {{ styleStatus.listenerCount }}
+            {{ getMessage('time') }}，{{ getMessage('call_back') }}
             {{ styleStatus.listenerTotal }}
             {{ getMessage('pcs') }}
           </p>
@@ -81,7 +82,8 @@
               </el-tooltip>
               ：
             </span>
-            {{ getMessage('light') }} {{ styleStatus.lightRules }} {{ getMessage('pcs') }}，{{ getMessage('dark') }}
+            {{ getMessage('light') }} {{ styleStatus.lightRules }}
+            {{ getMessage('pcs') }}，{{ getMessage('dark') }}
             {{ styleStatus.darkRules }} {{ getMessage('pcs') }}
           </p>
         </div>
