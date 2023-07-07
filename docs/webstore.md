@@ -5,10 +5,19 @@
 
 ### 应用商店描述
 
+#### 中文
+
 1. 网页主题色切换，深浅主题色一键切换
 2. 主动切换任一网页主题色的扩展，无需跟随浏览器统一的主题色风格
 3. 默认针对以下域名 mp.weixin.qq.com、sspai.com、developer.mozilla.org、learn.microsoft.com、theme-next.org、juejin.cn 等
 4. 其他域名需要用户点击授权使用即可
+
+#### 英文
+
+1. Web page theme color switching, one-click switching of dark and light theme colors
+2. Actively switch the theme color extension of any webpage, without following the unified theme color style of the browser
+3. By default, the following domain names are targeted: mp.weixin.qq.com, sspai.com, developer.mozilla.org, learn.microsoft.com, theme-next.org, juejin.cn, etc.
+4. Other domain names need users to click to authorize their use
 
 ### 权限描述
 
