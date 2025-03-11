@@ -47,6 +47,11 @@ window.matchMedia('(prefers-color-scheme: dark)')
 
 ## ChangeLog
 
+### 0.2.2
+
+- 添加同步配置
+- 添加配置页用户可以查看当前授权的网站及主题色状态
+
 ### 0.2.1
 
 - 修复报错
